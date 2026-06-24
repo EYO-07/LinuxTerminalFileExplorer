@@ -2,7 +2,7 @@
 
 // -- preprocessor directives 
 #include "CODEX_termios.h"
-static std::string VERSION="2026-06-23_22";
+static std::string VERSION="2026-06-24_0745";
 static std::string USAGE_TEXT = R"(
 Usage: terminalFileExplorer [options]
     terminalFileExplorer                         Starts the Navigation
@@ -115,7 +115,6 @@ int main(int argc, char *argv[]) {
             Explorer.update();
         }
         Explorer.setUpdateList(false);
-        std::cout.flush(); // Force output immediately 
     }
 end_main:
     restoreMode(settings);

@@ -443,8 +443,8 @@ void TerminalExplorer::update() {
     if ( this->getTerminal().compare("cd")!=0 ) {
         std::wcout << L"Drop Dir :   " << this->dropDir << std::endl;
         std::wcout << L"Terminal :   " << utf8_to_wstring(this->terminal) << std::endl;
+        std::wcout << L"... press 'a' for help ..." << std::endl;
     }
-    std::wcout << L"... press 'a' for help ..." << std::endl;
     coutSelectedFiles();
     if ( this->b_update_ls_list ) this->updateLsCommand(); 
     int it = 0;
