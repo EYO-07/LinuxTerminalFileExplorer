@@ -440,8 +440,10 @@ int TerminalExplorer::getIndex(const std::filesystem::path& dirPath) {
 void TerminalExplorer::update() { 
     std::wcout << std::endl;
     std::wcout << L"Curr Dir :   " << this->currentDir << std::endl;
-    std::wcout << L"Drop Dir :   " << this->dropDir << std::endl;
-    std::wcout << L"Terminal :   " << utf8_to_wstring(this->terminal) << std::endl;
+    if ( this->getTerminal().compare("cd")!=0 ) {
+        std::wcout << L"Drop Dir :   " << this->dropDir << std::endl;
+        std::wcout << L"Terminal :   " << utf8_to_wstring(this->terminal) << std::endl;
+    }
     std::wcout << L"... press 'a' for help ..." << std::endl;
     coutSelectedFiles();
     if ( this->b_update_ls_list ) this->updateLsCommand(); 
@@ -612,7 +614,12 @@ bool TerminalExplorer::generateDeleteFilesScript() {
         return false;
     }
 }
-
+void TerminalExplorer::outChangePath() {
+    saveFile( std::filesystem::absolute("/tmp"), L".cd_terminal_explorer", this->currentDir.string() ) ;
+}
+void TerminalExplorer::outKeepPath() {
+    saveFile( std::filesystem::absolute("/tmp"), L".cd_terminal_explorer", this->dropDir.string() ) ;
+}
 
 /// END CODEX_termios.h 
 

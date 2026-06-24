@@ -2,10 +2,11 @@
 
 // -- preprocessor directives 
 #include "CODEX_termios.h"
-static std::string VERSION="2026-06-23_10";
+static std::string VERSION="2026-06-23_22";
 static std::string USAGE_TEXT = R"(
 Usage: terminalFileExplorer [options]
     terminalFileExplorer                         Starts the Navigation
+    terminalFileExplorer --terminal=cd           Starts Strict Navigation Mode
     terminalFileExplorer --help                  Display this message 
 
 Options:
@@ -58,6 +59,7 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+    bool b_interactive_cd_mode = ( Explorer.getTerminal().compare("cd")==0 );
     // -- start 
     if (!disableRawMode(settings)) {
         std::cout << std::endl;
@@ -69,7 +71,10 @@ int main(int argc, char *argv[]) {
     Explorer.update();    
     while (!b_exit) {
         if (read(STDIN_FILENO, &key, 1) != 1) continue;
-        if (key == 'q' || key == 'Q') break;
+        if (key == 'q' || key == 'Q') {
+            Explorer.outKeepPath();
+            break;
+        }
         clearOutput();
         if (key=='i') Explorer.up();
         if (key=='k') Explorer.down();
@@ -81,19 +86,26 @@ int main(int argc, char *argv[]) {
             Explorer.setUpdateList(true);
             Explorer.left();
         }
-        if (key=='t') Explorer.openTerminal();
+        if (key=='t') { 
+            if ( b_interactive_cd_mode ) {
+                Explorer.outChangePath();
+                break;
+            } else {
+                Explorer.openTerminal();
+            }
+        }
         if (key=='y') Explorer.up(10);
         if (key=='h') Explorer.down(10);
-        if (key=='s') Explorer.selectFile(); // select current file or directory
-        if (key=='d') Explorer.deselectFile(); // select current file or directory
-        if (key=='f') Explorer.clearSelectedFiles(); // clear all
-        if (key=='m') { // move selected to current directory
+        if (key=='s' && !b_interactive_cd_mode) Explorer.selectFile(); // select current file or directory
+        if (key=='d' && !b_interactive_cd_mode) Explorer.deselectFile(); // select current file or directory
+        if (key=='f' && !b_interactive_cd_mode) Explorer.clearSelectedFiles(); // clear all
+        if (key=='m' && !b_interactive_cd_mode) { // move selected to current directory
             if ( Explorer.generateMoveFilesScript() ) break;
         } 
-        if (key=='c') { // copy selected to current directory
+        if (key=='c' && !b_interactive_cd_mode) { // copy selected to current directory
             if ( Explorer.generateCopyFilesScript() ) break;
         } 
-        if (key=='x') { // delete selected 
+        if (key=='x' && !b_interactive_cd_mode) { // delete selected 
             if ( Explorer.generateDeleteFilesScript() ) break;
         } 
         if (key=='u') Explorer.setUpdateList(true); // update ls list 

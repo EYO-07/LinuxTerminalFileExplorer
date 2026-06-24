@@ -56,6 +56,7 @@ public:
     void right();
     int getIndex(const std::filesystem::path&);
     void setTerminal(std::string term) { this->terminal = term; }
+    std::string getTerminal() { return this->terminal; }
     void openTerminal();
     void setGrepArgs(std::wstring arg) { this->grep_arg = arg; } // UNUSED 
     void selectFile();
@@ -67,6 +68,8 @@ public:
     void setUpdateList(bool value) { this->b_update_ls_list = value; }
     void setDropDir(std::filesystem::path dirPath) { this->dropDir = std::filesystem::absolute(dirPath); }
     bool isLineSelectedItem(int index);
+    void outChangePath();
+    void outKeepPath();
 protected:
     // -- variables 
     std::vector<std::wstring> lines;

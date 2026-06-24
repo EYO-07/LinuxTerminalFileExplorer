@@ -26,4 +26,6 @@ What did you mean by installation? If you just want to access it by it's name `t
 ```bash
 # add this to .bashrc or .bash_aliases
 alias terminalFileExplorer='PATH_TO_BUILD_LOCATION/terminalFileExplorer --terminal=xterm'
+# strict navigation mode
+alias icd='PATH_TO_BUILD_LOCATION/terminalFileExplorer --terminal=cd && cd $(cat /tmp/.cd_terminal_explorer)'
 ```

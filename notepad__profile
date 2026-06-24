@@ -3,14 +3,14 @@
 notepad-- --horizontal \
     --left \
         ./notepad__profile \
-        /home/user/Projects/LinuxTerminalFileExplorer/readme.md \
-        /home/user/Projects/LinuxTerminalFileExplorer/build.sh \
-        /home/user/Projects/LinuxTerminalFileExplorer/main.cpp \
-        /home/user/Projects/LinuxTerminalFileExplorer/CODEX_termios.cpp \
+        readme.md \
+        build.sh \
+        main.cpp \
+        CODEX_termios.cpp \
     --right \
-        /home/user/Projects/LinuxTerminalFileExplorer/_Journal \
-        /home/user/Projects/LinuxTerminalFileExplorer/_grimoire_LinuxInteractiveTerminal.h \
-        /home/user/Projects/LinuxTerminalFileExplorer/CODEX_termios.h \
+        _Journal \
+        _grimoire_LinuxInteractiveTerminal.h \
+        CODEX_termios.h \
 &
 
 # END
