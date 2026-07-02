@@ -30,6 +30,7 @@ void restoreMode(const termios& settings); // Restore terminal settings
 void saveCursorPosition(); // Necessary for clearOutput to know where to start clearing 
 void clearOutput();
 bool commandOutput(std::wstring command, std::vector<std::wstring>& lines);
+bool commandOutput(std::string command, std::string& output);
 bool changeDirectory(const std::wstring& path);
 std::vector<std::wstring> split(const std::wstring& input, wchar_t delimiter);
 std::vector<std::string> split(const std::string& input, char delimiter);
@@ -70,6 +71,7 @@ public:
     bool isLineSelectedItem(int index);
     void outChangePath();
     void outKeepPath();
+    bool coutCurrentHead();
 protected:
     // -- variables 
     std::vector<std::wstring> lines;

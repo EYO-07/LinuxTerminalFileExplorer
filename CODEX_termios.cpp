@@ -1,4 +1,5 @@
 /// BEGIN CODEX_termios.h 
+// {TextMarker|red:|blue:}
 
 // -- preprocessor directives
 #include "CODEX_termios.h"
@@ -97,6 +98,45 @@ bool commandOutput(std::wstring command, std::vector<std::wstring>& lines) {
         return WIFEXITED(status) && WEXITSTATUS(status) == 0;
     }
 }
+
+bool commandOutput(std::string command, std::string& output) {
+    int pipefd[2];
+    if (pipe(pipefd) == -1) return false;
+    pid_t pid = fork();
+    if (pid == -1) {
+        close(pipefd[0]); close(pipefd[1]);
+        return false;
+    }
+    if (pid == 0) {
+        // Child process
+        close(pipefd[0]);
+        dup2(pipefd[1], STDOUT_FILENO);
+        dup2(pipefd[1], STDERR_FILENO);
+        close(pipefd[1]);
+        try {
+            std::string narrowCommand = command;
+            execl("/bin/sh", "sh", "-c", narrowCommand.c_str(), nullptr);
+        } catch (...) {
+            // Conversion failed
+        }
+        _exit(127);
+    } else {
+        // Parent process
+        close(pipefd[1]);
+        std::string result;
+        char buffer[4096];
+        ssize_t bytesRead;
+        while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
+            result.append(buffer, bytesRead);
+        }
+        close(pipefd[0]);
+        int status;
+        waitpid(pid, &status, 0);
+        output = std::move(result);
+        return WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    }
+}
+
 bool changeDirectory(const std::wstring& path) {
     try {
         std::filesystem::current_path(path);
@@ -480,7 +520,7 @@ void TerminalExplorer::update() {
         it++;
     }
     std::wcout << std::endl;
-    std::wcout << L"Current File/Folder: " << current << L" ";    
+    std::wcout << L"Current File/Folder: " << current << std::endl;    
 }
 void TerminalExplorer::up(int step) {
     int count = 0;
@@ -620,6 +660,31 @@ void TerminalExplorer::outChangePath() {
 void TerminalExplorer::outKeepPath() {
     saveFile( std::filesystem::absolute("/tmp"), L".cd_terminal_explorer", this->dropDir.string() ) ;
 }
+
+bool TerminalExplorer::coutCurrentHead() {
+    // how to check the file type before using cat ? 
+    std::string result;
+    int index = getIndex(this->currentDir);
+    std::filesystem::path path = getPathFromLine(index);
+    if (path.string().compare(".")==0 || path.string().compare("..")==0) return false;
+    if (path.empty()) return false;
+    if (!std::filesystem::is_regular_file(path)) return false;
+    auto perms = std::filesystem::status(path).permissions();
+    if ((perms & std::filesystem::perms::owner_read) == std::filesystem::perms::none &&
+        (perms & std::filesystem::perms::group_read) == std::filesystem::perms::none &&
+        (perms & std::filesystem::perms::others_read) == std::filesystem::perms::none) {
+        std::cerr << "Error: '" << path << "' is not readable.\n";
+        return false;
+    }
+    // --
+    commandOutput("head "+path.string(), result);
+    std::cout << std::endl;
+    std::cout << result << std::endl;
+    std::cout << std::endl;
+    return true;
+}
+
+
 
 /// END CODEX_termios.h 
 

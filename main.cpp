@@ -2,7 +2,7 @@
 
 // -- preprocessor directives 
 #include "CODEX_termios.h"
-static std::string VERSION="2026-06-24_0745";
+static std::string VERSION="2026-06-24_19";
 static std::string USAGE_TEXT = R"(
 Usage: terminalFileExplorer [options]
     terminalFileExplorer                         Starts the Navigation
@@ -102,8 +102,12 @@ int main(int argc, char *argv[]) {
         if (key=='m' && !b_interactive_cd_mode) { // move selected to current directory
             if ( Explorer.generateMoveFilesScript() ) break;
         } 
-        if (key=='c' && !b_interactive_cd_mode) { // copy selected to current directory
-            if ( Explorer.generateCopyFilesScript() ) break;
+        if (key=='c') { // copy selected to current directory
+            if ( b_interactive_cd_mode ) {
+                // if (Explorer.coutCurrentHead()) goto skip_update; // not safe 
+            } else {
+                if ( Explorer.generateCopyFilesScript() ) break;
+            }
         } 
         if (key=='x' && !b_interactive_cd_mode) { // delete selected 
             if ( Explorer.generateDeleteFilesScript() ) break;
@@ -111,9 +115,10 @@ int main(int argc, char *argv[]) {
         if (key=='u') Explorer.setUpdateList(true); // update ls list 
         if (key=='a') { 
             std::cout << USAGE_TEXT << std::endl;
-        } else {
-            Explorer.update();
+            goto skip_update;
         }
+        Explorer.update();
+    skip_update:    
         Explorer.setUpdateList(false);
     }
 end_main:
