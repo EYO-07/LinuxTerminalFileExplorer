@@ -2,7 +2,7 @@
 
 // -- preprocessor directives 
 #include "CODEX_termios.h"
-static std::string VERSION="2026-06-24_19";
+static std::string VERSION="2026-07-14_19";
 static std::string USAGE_TEXT = R"(
 Usage: terminalFileExplorer [options]
     terminalFileExplorer                         Starts the Navigation
