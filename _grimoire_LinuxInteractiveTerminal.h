@@ -90,6 +90,7 @@ Workflow [ Programming ] { Magic Oriented Programming Paradigm }
 6. s.ends_with(suff); // C++20: Returns true if string ends with suff
 7. s.contains(sub); // C++23 (often used with C++20): Checks for substring
 8. s.substr(pos, len); // Returns a sub-string starting at pos
+-- s.substr(pos) // Return tail substring
 9. s.find(sub); // Returns index of first occurrence or std::string::npos
 10. s.replace(pos, len, str); // Replaces portion of string
 11. s.insert(pos, str); // Inserts string at specified position

@@ -1,4 +1,5 @@
 /// BEGIN CODEX_termios.h 
+// {TextMarker|red:|blue:getPathFromLine}
 
 // -- preprocessor directives
 #pragma once 

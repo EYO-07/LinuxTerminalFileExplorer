@@ -1,5 +1,5 @@
 /// BEGIN CODEX_termios.h 
-// {TextMarker|red:|blue:}
+// {TextMarker|red:|blue:getPathFromLine,isLineSelectedItem}
 
 // -- preprocessor directives
 #include "CODEX_termios.h"
@@ -98,7 +98,6 @@ bool commandOutput(std::wstring command, std::vector<std::wstring>& lines) {
         return WIFEXITED(status) && WEXITSTATUS(status) == 0;
     }
 }
-
 bool commandOutput(std::string command, std::string& output) {
     int pipefd[2];
     if (pipe(pipefd) == -1) return false;
@@ -136,7 +135,6 @@ bool commandOutput(std::string command, std::string& output) {
         return WIFEXITED(status) && WEXITSTATUS(status) == 0;
     }
 }
-
 bool changeDirectory(const std::wstring& path) {
     try {
         std::filesystem::current_path(path);
@@ -497,7 +495,7 @@ void TerminalExplorer::update() {
     for(const std::wstring& item: this->lines) {
         if (item.empty()) break; 
         int index = getIndex(this->currentDir);
-        is_selected = this->isLineSelectedItem(it) ? L" * " : L"";
+        is_selected = L""; //this->isLineSelectedItem(it) ? L" * " : L"";
         if ( it == index - this->range ) {
             std::wcout << L"..." << std::endl;
             it++;
@@ -564,7 +562,7 @@ void TerminalExplorer::openTerminal() {
     ::openTerminal( this->currentDir, this->terminal );
 }
 bool TerminalExplorer::updateLsCommand() {
-    std::wstring cmd = L"ls -la --human-readable --no-group --group-directories-first "+this->currentDir.wstring();
+    std::wstring cmd = L"ls -la --human-readable --no-group --group-directories-first '"+this->currentDir.wstring()+L"'";
     return 
         commandOutput(cmd+L" --color=always", this->lines ) &&
         commandOutput(cmd, this->raw_lines)
@@ -584,20 +582,21 @@ end:
     std::wcout << std::endl;
 }
 std::filesystem::path TerminalExplorer::getPathFromLine(int index) {
-    std::wstring str_path = L"";
-    std::filesystem::path path;
-    if (index<0 || index >= this->raw_lines.size() ) goto fail;     
-    str_path = this->raw_lines[index];
-    if ( str_path.empty() ) goto fail;
-    str_path = split(str_path,L' ').back();
-    if ( str_path.empty() ) goto fail;
-    path = std::filesystem::path(str_path);
-    if (path.empty()) goto fail;
-    if (!std::filesystem::exists(path)) goto fail;
-    return path;
-fail:
-    return std::filesystem::path{};
-} 
+    std::wstring raw_line = this->raw_lines[index];
+    std::filesystem::path candidate_path;
+    size_t max_len = 0;
+    for (const auto& entry : std::filesystem::directory_iterator(this->currentDir)) {
+        const auto& path = entry.path();
+        const auto& filename = path.filename().wstring();
+        if (raw_line.ends_with(filename)) {
+            if (filename.length() > max_len) {
+                max_len = filename.length();
+                candidate_path = path; 
+            }
+        }
+    }   
+    return candidate_path;
+}
 void TerminalExplorer::selectFile() {
     int index = getIndex(this->currentDir);
     std::filesystem::path path = getPathFromLine(index);
@@ -660,7 +659,6 @@ void TerminalExplorer::outChangePath() {
 void TerminalExplorer::outKeepPath() {
     saveFile( std::filesystem::absolute("/tmp"), L".cd_terminal_explorer", this->dropDir.string() ) ;
 }
-
 bool TerminalExplorer::coutCurrentHead() {
     // how to check the file type before using cat ? 
     std::string result;
@@ -683,8 +681,6 @@ bool TerminalExplorer::coutCurrentHead() {
     std::cout << std::endl;
     return true;
 }
-
-
 
 /// END CODEX_termios.h 
 
