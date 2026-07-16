@@ -1,8 +1,9 @@
 /// BEGIN GOLEM main.cpp { termios }
+// {TextMarker|magenta:wstring|cyan:string}
 
 // -- preprocessor directives 
 #include "CODEX_termios.h"
-static std::string VERSION="2026-07-14_19";
+static std::string VERSION="2026-07-15_21";
 static std::string USAGE_TEXT = R"(
 Usage: terminalFileExplorer [options]
     terminalFileExplorer                         Starts the Navigation
@@ -43,7 +44,6 @@ int main(int argc, char *argv[]) {
         int i;
         for (int i = 1; i < argc; ++i) {
             std::string strArgument = argv[i];
-            std::wstring wstrArgument = utf8_to_wstring(strArgument);
             if( strArgument.starts_with("--terminal") ) {
                 Explorer.setTerminal( split(strArgument,'=').back() );
             }

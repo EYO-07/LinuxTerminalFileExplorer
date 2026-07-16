@@ -221,7 +221,6 @@ Workflow [ Programming ] { Magic Oriented Programming Paradigm }
 13. TCSADRAIN // Change after output is written
 14. TCSAFLUSH // Change after output, discard unread input
 */
-
 /* Inventory [ Interactive Terminal ] { C++, Linux, Termios }
 1. #include <unistd.h> // For read(), STDIN_FILENO
 2. #include <iostream> // For cout
